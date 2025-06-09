@@ -1,0 +1,74 @@
+name: Telegram Bot Webhook Handler
+
+on:
+  workflow_dispatch:  # Manual trigger for testing
+  schedule:
+    - cron: '* * * * *'  # Run every minute for checking reminders
+  repository_dispatch:
+    types: [telegram-webhook]  # Custom webhook event
+
+jobs:
+  process-webhook:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'repository_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Process Telegram webhook
+        run: node api/webhook.js
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          HF_MODEL: 'meta-llama/Llama-3.3-70B-Instruct'
+          WEBHOOK_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+
+  check-reminders:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Process reminders
+        run: node api/reminders.js
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          HF_MODEL: 'meta-llama/Llama-3.3-70B-Instruct'
+
+  update-status:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    # Run once per hour to update bot status
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Update status file
+        run: |
+          echo "{ \"status\": \"online\", \"lastUpdated\": \"$(date -u +\"%Y-%m-%dT%H:%M:%SZ\")\" }" > status.json
+          
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add status.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update bot status"
+          git push

@@ -1,0 +1,101 @@
+{
+  "name": "Persian Telegram Bot - GitHub Pages",
+  "short_name": "TelegramBot",
+  "description": "Advanced Persian Telegram Bot with AI integration, reminders, and smart features",
+  "version": "1.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#0f3460",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "fa",
+  "dir": "rtl",
+  "categories": ["productivity", "utilities", "social"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%230f3460;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2316213e;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='192' height='192' rx='24' fill='url(%23grad)'/%3E%3Cg transform='translate(96,96)'%3E%3Ccircle cx='0' cy='0' r='60' fill='%23e94560' opacity='0.9'/%3E%3Cpath d='M-30,-20 L30,-20 L20,0 L30,20 L-30,20 Z' fill='white'/%3E%3Ccircle cx='25' cy='-25' r='8' fill='%2300ff88'/%3E%3C/g%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%230f3460;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2316213e;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='64' fill='url(%23grad)'/%3E%3Cg transform='translate(256,256)'%3E%3Ccircle cx='0' cy='0' r='160' fill='%23e94560' opacity='0.9'/%3E%3Cpath d='M-80,-50 L80,-50 L50,0 L80,50 L-80,50 Z' fill='white'/%3E%3Ccircle cx='65' cy='-65' r='20' fill='%2300ff88'/%3E%3Ctext x='0' y='120' text-anchor='middle' fill='white' font-family='Arial' font-size='24' font-weight='bold'%3ETelegram%3C/text%3E%3Ctext x='0' y='145' text-anchor='middle' fill='%23cccccc' font-family='Arial' font-size='16'%3EBot%3C/text%3E%3C/g%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'%3E%3Crect width='540' height='720' fill='%231a1a2e'/%3E%3Crect x='20' y='60' width='500' height='80' rx='8' fill='%230f3460'/%3E%3Ctext x='270' y='110' text-anchor='middle' fill='white' font-family='Arial' font-size='24' font-weight='bold'%3ETelegram Bot Dashboard%3C/text%3E%3Crect x='20' y='160' width='500' height='200' rx='8' fill='%2316213e'/%3E%3Ctext x='40' y='190' fill='%2300ff88' font-family='Arial' font-size='16'%3E🤖 Bot Status: Active%3C/text%3E%3Ctext x='40' y='220' fill='white' font-family='Arial' font-size='14'%3E📊 Messages: 1,234%3C/text%3E%3Ctext x='40' y='250' fill='white' font-family='Arial' font-size='14'%3E👥 Users: 56%3C/text%3E%3Ctext x='40' y='280' fill='white' font-family='Arial' font-size='14'%3E🧠 AI Responses: 890%3C/text%3E%3C/svg%3E",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "Dashboard view of the Telegram Bot interface"
+    }
+  ],
+  "features": [
+    "Cross Platform",
+    "AI Integration",
+    "Real-time Messaging",
+    "Offline Support",
+    "Push Notifications",
+    "Persian Language Support"
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View bot dashboard and statistics",
+      "url": "/?tab=dashboard",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230f3460' d='M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'/%3E%3C/svg%3E",
+          "sizes": "24x24",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "short_name": "Messages",
+      "description": "View recent messages",
+      "url": "/?tab=messages",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23e94560' d='M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z'/%3E%3C/svg%3E",
+          "sizes": "24x24",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Configure bot settings",
+      "url": "/?tab=settings",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2300ff88' d='M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z'/%3E%3C/svg%3E",
+          "sizes": "24x24",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "https://telegram.org/",
+      "id": "telegram-web"
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}
