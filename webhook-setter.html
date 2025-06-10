@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Telegram Webhook Setter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        .success {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+        }
+        .info {
+            background: linear-gradient(45deg, #0984e3, #74b9ff);
+        }
+        .warning {
+            background: linear-gradient(45deg, #fdcb6e, #e17055);
+        }
+        .result {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success {
+            background: rgba(0, 184, 148, 0.3);
+            border: 1px solid #00b894;
+        }
+        .status.error {
+            background: rgba(231, 76, 60, 0.3);
+            border: 1px solid #e74c3c;
+        }
+        .status.info {
+            background: rgba(52, 152, 219, 0.3);
+            border: 1px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Telegram Webhook Setter</h1>
+        
+        <div class="section">
+            <h2>📋 Current Configuration</h2>
+            <p><strong>Bot Token:</strong> 8066412183:AAGJKSVtYKJ8KLtgjfV1VD5oQ9RjR14JPUo</p>
+            <p><strong>Worker URL:</strong> https://persian-telegram-bot.palolxx.workers.dev</p>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Webhook Actions</h2>
+            <button class="button info" onclick="getWebhookInfo()">📊 Check Current Webhook</button>
+            <button class="button success" onclick="setWebhook()">🔗 Set Webhook</button>
+            <button class="button warning" onclick="deleteWebhook()">🗑️ Delete Webhook</button>
+            <button class="button" onclick="testWorker()">🧪 Test Worker</button>
+        </div>
+
+        <div class="section">
+            <h2>📊 Results</h2>
+            <div id="status"></div>
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h2>💡 Instructions</h2>
+            <ol>
+                <li><strong>Check Current Webhook:</strong> See what webhook is currently set</li>
+                <li><strong>Set Webhook:</strong> Set the webhook to your Cloudflare Worker URL</li>
+                <li><strong>Test Worker:</strong> Verify your worker is responding correctly</li>
+                <li><strong>Test Bot:</strong> Send a message to your bot in Telegram</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const BOT_TOKEN = '8066412183:AAGJKSVtYKJ8KLtgjfV1VD5oQ9RjR14JPUo';
+        const WORKER_URL = 'https://persian-telegram-bot.palolxx.workers.dev';
+        const API_BASE = `https://api.telegram.org/bot${BOT_TOKEN}`;
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function showResult(data) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function makeRequest(endpoint, method = 'GET', body = null) {
+            try {
+                showStatus('🔄 Making request...', 'info');
+                
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+                
+                const response = await fetch(`${API_BASE}/${endpoint}`, options);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    showStatus('✅ Request successful!', 'success');
+                } else {
+                    showStatus(`❌ Request failed: ${data.description}`, 'error');
+                }
+                
+                showResult(data);
+                return data;
+            } catch (error) {
+                showStatus(`❌ Network error: ${error.message}`, 'error');
+                showResult({ error: error.message });
+                return null;
+            }
+        }
+
+        async function getWebhookInfo() {
+            await makeRequest('getWebhookInfo');
+        }
+
+        async function setWebhook() {
+            await makeRequest('setWebhook', 'POST', {
+                url: WORKER_URL,
+                allowed_updates: ['message', 'callback_query']
+            });
+        }
+
+        async function deleteWebhook() {
+            await makeRequest('deleteWebhook', 'POST');
+        }
+
+        async function testWorker() {
+            try {
+                showStatus('🧪 Testing worker...', 'info');
+                const response = await fetch(WORKER_URL);
+                const text = await response.text();
+                
+                if (response.ok) {
+                    showStatus('✅ Worker is responding correctly!', 'success');
+                    showResult({ 
+                        status: response.status, 
+                        statusText: response.statusText,
+                        response: text 
+                    });
+                } else {
+                    showStatus(`❌ Worker returned error: ${response.status}`, 'error');
+                    showResult({ 
+                        status: response.status, 
+                        statusText: response.statusText,
+                        response: text 
+                    });
+                }
+            } catch (error) {
+                showStatus(`❌ Worker test failed: ${error.message}`, 'error');
+                showResult({ error: error.message });
+            }
+        }
+
+        // Auto-check webhook info on page load
+        window.addEventListener('load', () => {
+            showStatus('🚀 Webhook Setter Ready!', 'info');
+            setTimeout(getWebhookInfo, 1000);
+        });
+    </script>
+</body>
+</html>
