@@ -7,7 +7,7 @@ This Telegram bot now uses Groq AI instead of Hugging Face for faster and more e
 1. A Groq account (free tier available)
 2. Valid Groq API key
 3. Node.js environment with required dependencies
-
+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
 ## Step 1: Get Your Groq API Key
 
 1. Visit [Groq Console](https://console.groq.com/keys)

@@ -18,7 +18,12 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 async function handleWebhook() {
   try {
     // Parse the webhook payload from GitHub Actions environment variable
-    const payload = JSON.parse(process.env.WEBHOOK_PAYLOAD || '{}');
+    const clientPayload = JSON.parse(process.env.WEBHOOK_PAYLOAD || '{}');
+    
+    // Extract Telegram update from the forwarder payload
+    const payload = clientPayload.telegram_update || clientPayload;
+    
+    console.log('Received payload:', JSON.stringify(payload, null, 2));
     
     // Check if this is a valid Telegram update
     if (!payload || !payload.message) {

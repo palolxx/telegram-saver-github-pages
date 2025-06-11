@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "webhook-forwarder.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/webhook",
+      "dest": "/webhook-forwarder.js"
+    },
+    {
+      "src": "/",
+      "dest": "/webhook-forwarder.js"
+    }
+  ]
+}

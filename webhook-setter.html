@@ -94,8 +94,14 @@
         
         <div class="section">
             <h2>📋 Current Configuration</h2>
-            <p><strong>Bot Token:</strong> 8066412183:AAGJKSVtYKJ8KLtgjfV1VD5oQ9RjR14JPUo</p>
-            <p><strong>Worker URL:</strong> https://persian-telegram-bot.palolxx.workers.dev</p>
+            <p><strong>Bot Token:</strong> <span id="botToken">YOUR_BOT_TOKEN</span></p>
+            <p><strong>Webhook URL:</strong> <span id="webhookUrl">YOUR_VERCEL_URL/webhook</span></p>
+            <p><strong>Status:</strong> <span id="connectionStatus">Not configured</span></p>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Configuration</h2>
+            <button class="button info" onclick="updateConfiguration()">⚙️ Update Configuration</button>
         </div>
 
         <div class="section">
@@ -103,7 +109,7 @@
             <button class="button info" onclick="getWebhookInfo()">📊 Check Current Webhook</button>
             <button class="button success" onclick="setWebhook()">🔗 Set Webhook</button>
             <button class="button warning" onclick="deleteWebhook()">🗑️ Delete Webhook</button>
-            <button class="button" onclick="testWorker()">🧪 Test Worker</button>
+            <button class="button" onclick="testWebhookForwarder()">🧪 Test Webhook Forwarder</button>
         </div>
 
         <div class="section">
@@ -113,20 +119,66 @@
         </div>
 
         <div class="section">
-            <h2>💡 Instructions</h2>
+            <h2>💡 Setup Instructions</h2>
             <ol>
-                <li><strong>Check Current Webhook:</strong> See what webhook is currently set</li>
-                <li><strong>Set Webhook:</strong> Set the webhook to your Cloudflare Worker URL</li>
-                <li><strong>Test Worker:</strong> Verify your worker is responding correctly</li>
+                <li><strong>Deploy Webhook Forwarder:</strong> Deploy <code>webhook-forwarder.js</code> to Vercel</li>
+                <li><strong>Configure Environment Variables:</strong> Set GITHUB_TOKEN, GITHUB_REPO, TELEGRAM_BOT_TOKEN in Vercel</li>
+                <li><strong>Update Configuration:</strong> Click "Update Configuration" and enter your bot token and Vercel URL</li>
+                <li><strong>Set Webhook:</strong> Click "Set Webhook" to configure Telegram</li>
+                <li><strong>Test Connection:</strong> Use "Test Webhook Forwarder" to verify the service</li>
                 <li><strong>Test Bot:</strong> Send a message to your bot in Telegram</li>
             </ol>
+            
+            <h3>🚀 Quick Deploy to Vercel:</h3>
+            <p>1. Install Vercel CLI: <code>npm i -g vercel</code></p>
+            <p>2. Run: <code>vercel --prod</code></p>
+            <p>3. Set environment variables in Vercel dashboard</p>
         </div>
     </div>
 
     <script>
-        const BOT_TOKEN = '8066412183:AAGJKSVtYKJ8KLtgjfV1VD5oQ9RjR14JPUo';
-        const WORKER_URL = 'https://persian-telegram-bot.palolxx.workers.dev';
-        const API_BASE = `https://api.telegram.org/bot${BOT_TOKEN}`;
+        // Configuration - Update these values
+        let BOT_TOKEN = localStorage.getItem('telegram_bot_token') || '';
+        let WEBHOOK_URL = localStorage.getItem('webhook_url') || '';
+        let API_BASE = BOT_TOKEN ? `https://api.telegram.org/bot${BOT_TOKEN}` : '';
+
+        // Update display on page load
+        window.addEventListener('load', () => {
+            document.getElementById('botToken').textContent = BOT_TOKEN || 'Not set';
+            document.getElementById('webhookUrl').textContent = WEBHOOK_URL || 'Not set';
+            updateConnectionStatus();
+        });
+
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            if (BOT_TOKEN && WEBHOOK_URL) {
+                statusElement.textContent = 'Configured';
+                statusElement.style.color = '#00b894';
+            } else {
+                statusElement.textContent = 'Not configured';
+                statusElement.style.color = '#e74c3c';
+            }
+        }
+
+        function updateConfiguration() {
+            const newBotToken = prompt('Enter your Telegram Bot Token:', BOT_TOKEN);
+            const newWebhookUrl = prompt('Enter your Vercel webhook URL (e.g., https://your-app.vercel.app/webhook):', WEBHOOK_URL);
+            
+            if (newBotToken && newBotToken.trim()) {
+                BOT_TOKEN = newBotToken.trim();
+                localStorage.setItem('telegram_bot_token', BOT_TOKEN);
+                document.getElementById('botToken').textContent = BOT_TOKEN;
+                API_BASE = `https://api.telegram.org/bot${BOT_TOKEN}`;
+            }
+            
+            if (newWebhookUrl && newWebhookUrl.trim()) {
+                WEBHOOK_URL = newWebhookUrl.trim();
+                localStorage.setItem('webhook_url', WEBHOOK_URL);
+                document.getElementById('webhookUrl').textContent = WEBHOOK_URL;
+            }
+            
+            updateConnectionStatus();
+        }
 
         function showStatus(message, type = 'info') {
             const statusDiv = document.getElementById('status');
@@ -139,6 +191,12 @@
         }
 
         async function makeRequest(endpoint, method = 'GET', body = null) {
+            if (!BOT_TOKEN || !API_BASE) {
+                showStatus('❌ Bot token not configured! Please update configuration first.', 'error');
+                showResult({ error: 'Bot token is required for API requests' });
+                return null;
+            }
+            
             try {
                 showStatus('🔄 Making request...', 'info');
                 
@@ -154,6 +212,11 @@
                 }
                 
                 const response = await fetch(`${API_BASE}/${endpoint}`, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
                 const data = await response.json();
                 
                 if (data.ok) {
@@ -166,7 +229,7 @@
                 return data;
             } catch (error) {
                 showStatus(`❌ Network error: ${error.message}`, 'error');
-                showResult({ error: error.message });
+                showResult({ error: error.message, details: 'Check your bot token and internet connection' });
                 return null;
             }
         }
@@ -176,9 +239,14 @@
         }
 
         async function setWebhook() {
+            if (!BOT_TOKEN || !WEBHOOK_URL) {
+                showStatus('❌ Please configure Bot Token and Webhook URL first!', 'error');
+                return;
+            }
+            
             await makeRequest('setWebhook', 'POST', {
-                url: WORKER_URL,
-                allowed_updates: ['message', 'callback_query']
+                url: WEBHOOK_URL,
+                allowed_updates: ['message', 'callback_query', 'inline_query']
             });
         }
 
@@ -186,21 +254,32 @@
             await makeRequest('deleteWebhook', 'POST');
         }
 
-        async function testWorker() {
+        async function testWebhookForwarder() {
+            if (!WEBHOOK_URL) {
+                showStatus('❌ Please configure Webhook URL first!', 'error');
+                return;
+            }
+            
             try {
-                showStatus('🧪 Testing worker...', 'info');
-                const response = await fetch(WORKER_URL);
+                showStatus('🧪 Testing webhook forwarder...', 'info');
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 const text = await response.text();
                 
-                if (response.ok) {
-                    showStatus('✅ Worker is responding correctly!', 'success');
+                if (response.ok || response.status === 405) {
+                    showStatus('✅ Webhook forwarder is responding correctly!', 'success');
                     showResult({ 
                         status: response.status, 
                         statusText: response.statusText,
-                        response: text 
+                        response: text,
+                        note: 'Status 405 (Method Not Allowed) is expected for GET requests'
                     });
                 } else {
-                    showStatus(`❌ Worker returned error: ${response.status}`, 'error');
+                    showStatus(`❌ Webhook forwarder returned error: ${response.status}`, 'error');
                     showResult({ 
                         status: response.status, 
                         statusText: response.statusText,
@@ -208,7 +287,7 @@
                     });
                 }
             } catch (error) {
-                showStatus(`❌ Worker test failed: ${error.message}`, 'error');
+                showStatus(`❌ Webhook forwarder test failed: ${error.message}`, 'error');
                 showResult({ error: error.message });
             }
         }
@@ -216,7 +295,14 @@
         // Auto-check webhook info on page load
         window.addEventListener('load', () => {
             showStatus('🚀 Webhook Setter Ready!', 'info');
-            setTimeout(getWebhookInfo, 1000);
+            if (BOT_TOKEN && BOT_TOKEN.trim()) {
+                setTimeout(() => {
+                    showStatus('🔍 Checking current webhook configuration...', 'info');
+                    getWebhookInfo();
+                }, 1000);
+            } else {
+                showStatus('⚙️ Please configure your bot token and webhook URL first', 'info');
+            }
         });
     </script>
 </body>
